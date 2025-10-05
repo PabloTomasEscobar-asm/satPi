@@ -1,5 +1,7 @@
 #include "mpu9250.h"
 #include <stdio.h>
+#include <errno.h>  // For error number checking
+#include <string.h> // For strerror function
 
 /**
  * @brief Initializes the MPU-9250 sensor.
@@ -10,16 +12,27 @@
 int mpu9250_init(int devId) {
     int fd = wiringPiI2CSetup(devId);
     if (fd == -1) {
-        printf("Failed to initialize I2C device.\\n");
+        // Provide a more detailed error message
+        fprintf(stderr, "Failed to initialize I2C device at address 0x%x. Error: %s\\n", devId, strerror(errno));
+        fprintf(stderr, "Please check your I2C wiring and ensure the interface is enabled.\\n");
         return -1;
     }
 
     // Check device ID
     int who_am_i = wiringPiI2CReadReg8(fd, WHO_AM_I);
+    if (who_am_i <= 0) {
+        fprintf(stderr, "Failed to read from WHO_AM_I register. Got value: %d\\n", who_am_i);
+        fprintf(stderr, "This usually indicates a wiring problem or incorrect I2C address.\\n");
+        fprintf(stderr, "Run 'sudo i2cdetect -y 1' to scan for devices.\\n");
+        return -1;
+    }
+
     if (who_am_i != 0x71) {
         printf("Incorrect device ID. Expected 0x71, but got 0x%x\\n", who_am_i);
         return -1;
     }
+
+    printf("MPU-9250 found with device ID 0x%x\\n", who_am_i);
 
     // Wake up the MPU-9250
     wiringPiI2CWriteReg8(fd, PWR_MGMT_1, 0x00);
@@ -30,6 +43,8 @@ int mpu9250_init(int devId) {
 
     return fd;
 }
+
+// ... (las otras funciones: mpu9250_read_word, mpu9250_read_accel, mpu9250_read_gyro se mantienen igual) ...
 
 /**
  * @brief Reads a 16-bit word (two bytes) from a register.

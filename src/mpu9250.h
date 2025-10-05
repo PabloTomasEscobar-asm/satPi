@@ -14,7 +14,7 @@
 #define GYRO_XOUT_H  0x43
 #define GYRO_YOUT_H  0x45
 #define GYRO_ZOUT_H  0x47
-#define WHO_AM_I     0x71 //0x68 for the mpu6050
+#define WHO_AM_I     0x75 //0x68 for the mpu6050
 
 int mpu9250_init(int devId);
 int16_t mpu9250_read_word(int fd, int reg);
