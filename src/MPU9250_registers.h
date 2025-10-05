@@ -186,3 +186,4 @@
 #define PWR_MGMT_2       0x6C  // (R/W) Power Management 2
 #define WHO_AM_I_MPU9250 0x75  // (R) Who Am I register, should return 0x71
 
+#endif // MPU9250_REGISTERS_H
