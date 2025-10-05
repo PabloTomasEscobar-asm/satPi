@@ -94,6 +94,10 @@ public:
     void calibrate(); // Performs accelerometer and gyroscope calibration
     void selfTest(); // Performs a factory self-test
 
+    // Interrupt Methods
+    void enableWakeOnMotion(float threshold_mg);
+    uint8_t getInterruptStatus();
+
     // Methods to get current resolution
     float getAccelRes();
     float getGyroRes();

@@ -341,5 +341,3 @@ void MPU9250::updateResolutions() {
         case MFS_16BITS: _mRes = 10.0f * 4912.0f / 32760.0f; break;
     }
 }
-
-}
