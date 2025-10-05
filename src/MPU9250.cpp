@@ -323,7 +323,5 @@ void MPU9250::updateResolutions() {
     switch (_mscale) {
         case MFS_14BITS: _mRes = 10.0 * 4912.0 / 8190.0; break;
         case MFS_16BITS: _mRes = 10.0 * 4912.0 / 32760.0; break;
-    sat@satpi:~/satPi/src $ ./mpu_test
-ERROR: AK8963 WHO_AM_I check failed. Expected 0x48, got 0xff
-Failed to initialize MPU9250. Please check connections.}
+    }
 }
