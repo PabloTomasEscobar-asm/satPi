@@ -22,6 +22,17 @@ bool MPU9250::init(Ascale ascale, Gscale gscale, Mscale mscale, Mmode mmode) {
     // Initialize wiringPi and I2C communication
     wiringPiSetup();
     _mpu_fd = wiringPiI2CSetup(MPU9250_ADDRESS);
+
+    if (_mpu_fd == -1) {
+        std::cerr << "ERROR: Failed to initialize I2C for MPU9250." << std::endl;
+        return false;
+    }
+
+    // Enable I2C Bypass Mode to access the AK8963 magnetometer.
+    // This makes the AK8963 visible on the main I2C bus.
+    writeByte(_mpu_fd, INT_PIN_CFG, 0x02);
+    delay(10); // Wait for the bypass to activate
+
     _mag_fd = wiringPiI2CSetup(AK8963_ADDRESS);
 
     if (_mpu_fd == -1 || _mag_fd == -1) {
@@ -312,5 +323,7 @@ void MPU9250::updateResolutions() {
     switch (_mscale) {
         case MFS_14BITS: _mRes = 10.0 * 4912.0 / 8190.0; break;
         case MFS_16BITS: _mRes = 10.0 * 4912.0 / 32760.0; break;
-    }
+    sat@satpi:~/satPi/src $ ./mpu_test
+ERROR: AK8963 WHO_AM_I check failed. Expected 0x48, got 0xff
+Failed to initialize MPU9250. Please check connections.}
 }

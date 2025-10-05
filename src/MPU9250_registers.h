@@ -109,7 +109,7 @@
 #define INT_STATUS        0x3A
 
 // ===============================================================================
-//                              MPU9250 Sensor Data Registers
+//                              MPU9250 Sensor Data Output Registers
 // ===============================================================================
 #define ACCEL_XOUT_H      0x3B
 #define ACCEL_XOUT_L      0x3C
@@ -125,7 +125,34 @@
 #define GYRO_YOUT_L       0x46
 #define GYRO_ZOUT_H       0x47
 #define GYRO_ZOUT_L       0x48
-#define EXT_SENS_DATA_00  0x49 // And subsequent 23 registers
+
+// ===============================================================================
+//                              MPU9250 External Sensor Data Registers
+// ===============================================================================
+#define EXT_SENS_DATA_00  0x49
+#define EXT_SENS_DATA_01  0x4A
+#define EXT_SENS_DATA_02  0x4B
+#define EXT_SENS_DATA_03  0x4C
+#define EXT_SENS_DATA_04  0x4D
+#define EXT_SENS_DATA_05  0x4E
+#define EXT_SENS_DATA_06  0x4F
+#define EXT_SENS_DATA_07  0x50
+#define EXT_SENS_DATA_08  0x51
+#define EXT_SENS_DATA_09  0x52
+#define EXT_SENS_DATA_10  0x53
+#define EXT_SENS_DATA_11  0x54
+#define EXT_SENS_DATA_12  0x55
+#define EXT_SENS_DATA_13  0x56
+#define EXT_SENS_DATA_14  0x57
+#define EXT_SENS_DATA_15  0x58
+#define EXT_SENS_DATA_16  0x59
+#define EXT_SENS_DATA_17  0x5A
+#define EXT_SENS_DATA_18  0x5B
+#define EXT_SENS_DATA_19  0x5C
+#define EXT_SENS_DATA_20  0x5D
+#define EXT_SENS_DATA_21  0x5E
+#define EXT_SENS_DATA_22  0x5F
+#define EXT_SENS_DATA_23  0x60
 
 // ===============================================================================
 //                              MPU9250 Motion Detection Registers
