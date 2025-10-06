@@ -1,71 +1,50 @@
 #include <iostream>
+#include <cmath> // Required for abs()
+#include <iomanip> // Required for std::fixed, std::setprecision
 #include <wiringPi.h>
 #include "MPU9250.h"
-
-// Define the GPIO pin connected to the MPU9250 INT pin
-// Using wiringPi pin numbers. Pin 0 is GPIO 17.
-#define INTERRUPT_PIN 0
-
-// A global flag to be set by the ISR
-// 'volatile' is crucial here to ensure the compiler doesn't optimize away checks on this variable.
-volatile bool motionDetected = false;
-
-// The Interrupt Service Routine (ISR)
-// This function is called automatically when the interrupt pin goes high.
-// It should be as short and fast as possible.
-void motionISR() {
-    motionDetected = true;
-}
 
 int main() {
     // Create an instance of the MPU9250 class
     MPU9250 mpu;
 
-    // Initialize the MPU9250
-    if (!mpu.init()) {
+    // Initialize the MPU9250.
+    // It's important to set a scale that includes the threshold you want to detect.
+    // AFS_2G is perfect for detecting 1g.
+    if (!mpu.init(AFS_2G)) {
         std::cerr << "Failed to initialize MPU9250." << std::endl;
         return -1;
     }
 
-    // --- Setup the Interrupt ---
-    // Set the GPIO pin as an input
-    pinMode(INTERRUPT_PIN, INPUT);
-    // Attach our ISR function to the pin's rising edge
-    if (wiringPiISR(INTERRUPT_PIN, INT_EDGE_RISING, &motionISR) < 0) {
-        std::cerr << "Unable to setup ISR." << std::endl;
-        return 1;
-    }
+    // Calibrate the sensor for more accurate readings
+    mpu.calibrate();
 
-    // Enable Wake-on-Motion on the MPU9250 with a threshold of 200mg
-    mpu.enableWakeOnMotion(200.0f);
+    std::cout << "Polling for motion on Y-axis greater than 1g..." << std::endl;
 
-    std::cout << "Waiting for motion..." << std::endl;
-
-    // Main loop
+    // Main loop for software polling
     while (1) {
-        // The program will spend most of its time in this delay, consuming very little CPU.
-        if (motionDetected) {
-            std::cout << "\nMotion Detected!" << std::endl;
+        // Always read the latest sensor data in the loop
+        mpu.update();
 
-            // IMPORTANT: Read the interrupt status register to clear the interrupt pin.
-            // If you don't do this, the interrupt will stay active and you won't get new ones.
-            uint8_t status = mpu.getInterruptStatus();
-
-            // You can optionally print the status to see which interrupt was triggered
-            std::cout << "Interrupt Status: 0x" << std::hex << (int)status << std::dec << std::endl;
+        // Check if the absolute value of Y-axis acceleration is greater than 1.0g
+        if (std::abs(mpu.az) > 1.0f) {
+            std::cout << "\nMotion Detected on z-axis!" << std::endl;
             
-            // Now you can read the sensor data to see the motion
-            mpu.update();
-            std::cout << "Accel [g]: X=" << mpu.ax << ", Y=" << mpu.ay << ", Z=" << mpu.az << std::endl;
+            // Print the value that triggered the detection
+            std::cout << std::fixed << std::setprecision(3);
+            std::cout << "z-axis acceleration: " << mpu.az << " g" << std::endl;
+            
+            // Wait for 2 seconds before continuing to avoid spamming the console
+            delay(2000); 
 
-            // Reset the flag and wait for the next motion
-            motionDetected = false;
-            std::cout << "\nWaiting for motion..." << std::endl;
+            std::cout << "\nPolling for motion..." << std::endl;
         }
 
-        delay(100); // Check the flag every 100ms
+        // Wait for a short period before the next check to avoid maxing out the CPU
+        delay(100); 
     }
 
     return 0;
 }
+
 
